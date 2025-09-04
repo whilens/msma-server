@@ -1,0 +1,12 @@
+# Зависимости
+node_modules/
+*/node_modules/
+
+# Git line ending warnings
+*.js text eol=lf
+*.json text eol=lf
+
+# Uploads and user-generated content
+uploads/
+server/uploads/
+**/uploads/
