@@ -98,7 +98,7 @@ class SignController {
 
             const postContract = await axios.post('https://api.doki.online/external/new-pdf-contract', {
                 api_key: "YGCszoU1Yi_Ao9cK9pLZJCsmWRHWwJMC",
-                url: "https://wayces.ru/uploads/contracts/contract_1757061894154_1757061894154.pdf", // Добавлено .pdf
+                url: `${process.env.SERVER_URL || 'https://wayces.ru'}${pdfUrl}`, // Добавлено .pdf
                 system_entities: [
                     {	
                         "value": "",
