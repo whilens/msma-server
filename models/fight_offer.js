@@ -80,10 +80,10 @@ const FightOffer = sequelize.define('FightOffer', {
         allowNull: true,
         comment: 'Время истечения оффера'
     },
-    fighter_response: {
+    contract_pdf_url: {
         type: DataTypes.TEXT,
         allowNull: true,
-        comment: 'Комментарий бойца при ответе'
+        comment: 'URL контракта'
     }
 }, {
     tableName: 'fight_offers',

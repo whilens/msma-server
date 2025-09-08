@@ -46,7 +46,13 @@ const GoFight = sequelize.define('GoFight', {
     type: DataTypes.TEXT,
     allowNull: true,
     comment: 'Сообщение от бойца при отклике'
+  },
+  contract_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'ID контракта'
   }
+
 }, {
   tableName: 'gofight',
   timestamps: true,

@@ -1061,7 +1061,27 @@ class ChatController {
                 );
     
                 if (resultPdf.success) {
-                    console.log('успешно создан pdf контракт')
+                    console.log('успешно создан pdf контракт');
+                    
+                    // Сохраняем URL PDF в таблице fight_offer
+                    const pdfUrl = `/uploads/contracts/${resultPdf.filename}`;
+                    await offer.update({
+                        contract_pdf_url: pdfUrl
+                    });
+                    
+                    // Создаем запись в таблице fight_contract
+                    const FightContract = require('../models').FightContract;
+                    const contract = await FightContract.create({
+                        fight_id: offer.fight_id,
+                        fighter_id: offer.fighter_id,
+                        promoter_id: offer.promoter_id,
+                        offer_id: offer.id,
+                        contract_pdf_url: pdfUrl,
+                        status: 'created'
+                    });
+                    
+                    console.log(`PDF URL сохранен в fight_offer: ${pdfUrl}`);
+                    console.log(`Контракт создан в fight_contract с ID: ${contract.id}`);
                 } else {
                     console.log('ошибка создания pdf контракта', resultPdf);
                 }
