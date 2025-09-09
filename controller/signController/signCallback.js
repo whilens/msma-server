@@ -146,10 +146,8 @@ class SignCallback {
                 ]
             });
 
-            // Получаем WebSocket сервер из глобального экземпляра
-            const webSocketServer = this.webSocketServer || getWebSocketInstance();
-            
-            if (fullChatRoom && webSocketServer) {
+            // Проверяем наличие чата (WebSocket уведомления пока отключены)
+            if (fullChatRoom) {
                 // Отправляем уведомление в чат
                 const notificationData = {
                     type: 'contract_signed',
@@ -163,29 +161,11 @@ class SignCallback {
                     }
                 };
 
-                // Отправляем уведомление всем участникам чата
-                webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
-                
-                console.log('📢 WebSocket уведомление отправлено в чат:', fullChatRoom.id);
+                console.log('📢 Контракт подписан для чата:', fullChatRoom.id);
+                console.log('📊 Данные уведомления:', notificationData);
 
-                // Отправляем специальное уведомление промоутеру для скрытия кнопки
-                const promoterNotification = {
-                    type: 'contract_signed_promoter',
-                    message: 'Контракт подписан! Кнопка "Подписать контракт" скрыта.',
-                    contractId: contract.id,
-                    hideSignButton: true,
-                    signedAt: new Date().toISOString()
-                };
-
-                // Находим промоутера в чате
-                const promoter = fullChatRoom.Participants?.find(p => 
-                    p.User && p.User.user_type === 'promoter'
-                );
-
-                if (promoter) {
-                    webSocketServer.sendToUser(promoter.User.id, promoterNotification);
-                    console.log('📢 Специальное уведомление отправлено промоутеру:', promoter.User.id);
-                }
+                // TODO: Добавить WebSocket уведомления после исправления
+                // webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
             }
 
             // Обновляем статус оффера если нужно
