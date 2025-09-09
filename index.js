@@ -20,13 +20,13 @@ const wss = new WebSocketServer(server);
 // Сохраняем WebSocket сервер в app для доступа из контроллеров
 app.set('webSocketServer', wss);
 
-// Подключаем WebSocket к контроллерам для уведомлений
+// Устанавливаем глобальный экземпляр WebSocket для доступа из контроллеров
 const { setWebSocketInstance } = require('./websocket-instance');
+setWebSocketInstance(wss);
+
+// Подключаем WebSocket к контроллерам для уведомлений
 const fightResponseController = require('./controller/fightResponseController');
 const signCallback = require('./controller/signController/signCallback');
-
-// Устанавливаем глобальный экземпляр WebSocket
-setWebSocketInstance(wss);
 
 fightResponseController.setWebSocketServer(wss);
 signCallback.setWebSocketServer(wss);

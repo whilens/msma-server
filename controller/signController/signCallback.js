@@ -164,8 +164,16 @@ class SignCallback {
                 console.log('📢 Контракт подписан для чата:', fullChatRoom.id);
                 console.log('📊 Данные уведомления:', notificationData);
 
-                // TODO: Добавить WebSocket уведомления после исправления
-                // webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
+                // Отправляем WebSocket уведомления
+                const { getWebSocketInstance } = require('../../websocket-instance');
+                const webSocketServer = getWebSocketInstance();
+                
+                if (webSocketServer) {
+                    webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
+                    console.log('📢 WebSocket уведомление отправлено в чат:', fullChatRoom.id);
+                } else {
+                    console.log('⚠️ WebSocket сервер недоступен');
+                }
             }
 
             // Обновляем статус оффера если нужно
