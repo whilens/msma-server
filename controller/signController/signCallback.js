@@ -1,4 +1,5 @@
 const { FightContract, ChatRoom, ChatRoomParticipant, Users, GoFight, Fight, Fighters, Events, Promoters, FightOffer } = require('../../models');
+const { getWebSocketInstance } = require('../../websocket-instance');
 
 class SignCallback {
     constructor() {
@@ -145,7 +146,10 @@ class SignCallback {
                 ]
             });
 
-            if (fullChatRoom && this.webSocketServer) {
+            // Получаем WebSocket сервер из глобального экземпляра
+            const webSocketServer = this.webSocketServer || getWebSocketInstance();
+            
+            if (fullChatRoom && webSocketServer) {
                 // Отправляем уведомление в чат
                 const notificationData = {
                     type: 'contract_signed',
@@ -160,7 +164,7 @@ class SignCallback {
                 };
 
                 // Отправляем уведомление всем участникам чата
-                this.webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
+                webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
                 
                 console.log('📢 WebSocket уведомление отправлено в чат:', fullChatRoom.id);
 
@@ -179,7 +183,7 @@ class SignCallback {
                 );
 
                 if (promoter) {
-                    this.webSocketServer.sendToUser(promoter.User.id, promoterNotification);
+                    webSocketServer.sendToUser(promoter.User.id, promoterNotification);
                     console.log('📢 Специальное уведомление отправлено промоутеру:', promoter.User.id);
                 }
             }
