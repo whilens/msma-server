@@ -92,21 +92,21 @@ class SignController {
             }
 
             // Если контракт существует, но не отправлен на подписание, или не существует - создаем/обновляем
-            const pdfUrl = `https://wayces.ru${acceptedOffer.contract_pdf_url}`;
-            
+            const pdfUrl = `${process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL_PROD + acceptedOffer.contract_pdf_url : 'https://wayces.ru/uploads/contracts/contract_1757416440814_1757416440814.pdf'}`;
+            const redirectUrl = `${process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL_PROD + '/chat/' + roomId : 'http://localhost:3000/chat/' + roomId}`;
             console.log('Отправляем контракт в OkiDoki API:', pdfUrl);
 
             const postContract = await axios.post('https://api.doki.online/external/new-pdf-contract', {
                 api_key: "YGCszoU1Yi_Ao9cK9pLZJCsmWRHWwJMC",
-                url: "https://wayces.ru/uploads/contracts/contract_1757061894154_1757061894154.pdf", // Добавлено .pdf
+                url: pdfUrl, // Добавлено .pdf
                 system_entities: [
                     {	
                         "value": "",
                         "keyword": ""
                     }
                 ],
-                callback_url: `${process.env.SERVER_URL || 'https://wayces.ru'}/api/sign/sign-callback`,  // на этот url наш сервис будет отправлять уведомления 
-                redirect_url: "http://localhost:3000/chat/" + roomId,
+                callback_url: `${process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL_PROD + '/api/sign/sign-callback' : ''}`,  // на этот url наш сервис будет отправлять уведомления 
+                redirect_url: redirectUrl,
                 actual_user_card_id: "" // карточка подписанта. Если это поле не передать - договор подпишется от имени профиля
             });
 

@@ -22,7 +22,9 @@ app.set('webSocketServer', wss);
 
 // Подключаем WebSocket к контроллерам для уведомлений
 const fightResponseController = require('./controller/fightResponseController');
+const signCallback = require('./controller/signController/signCallback');
 fightResponseController.setWebSocketServer(wss);
+signCallback.setWebSocketServer(wss);
 
 app.use(express.json());
 app.use(cors({
