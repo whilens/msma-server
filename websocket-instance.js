@@ -1,13 +1,12 @@
-// Глобальный экземпляр WebSocket сервера
-let webSocketInstance = null;
+let webSocketServer = null;
 
-const setWebSocketInstance = (wss) => {
-    webSocketInstance = wss;
-};
+function setWebSocketInstance(wss) {
+    webSocketServer = wss;
+}
 
-const getWebSocketInstance = () => {
-    return webSocketInstance;
-};
+function getWebSocketInstance() {
+    return webSocketServer;
+}
 
 module.exports = {
     setWebSocketInstance,
