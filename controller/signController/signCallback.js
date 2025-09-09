@@ -30,16 +30,28 @@ class SignCallback {
                 where: { okidoki_contract_id: _id },
                 include: [
                     {
-                        model: ChatRoom,
-                        as: 'ChatRoom',
+                        model: Fight,
+                        as: 'Fight',
                         include: [
                             {
-                                model: ChatRoomParticipant,
-                                as: 'Participants',
+                                model: GoFight,
+                                as: 'Responses',
                                 include: [
                                     {
-                                        model: Users,
-                                        as: 'User'
+                                        model: ChatRoom,
+                                        as: 'ChatRoom',
+                                        include: [
+                                            {
+                                                model: ChatRoomParticipant,
+                                                as: 'Participants',
+                                                include: [
+                                                    {
+                                                        model: Users,
+                                                        as: 'User'
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -74,7 +86,19 @@ class SignCallback {
             console.log('✅ Статус контракта обновлен на "signed"');
 
             // Находим чат для отправки уведомления
-            const chatRoom = await ChatRoom.findByPk(contract.ChatRoom?.id || contract.fight_id, {
+            // Получаем первый доступный чат из связанных GoFight
+            const chatRoom = contract.Fight?.Responses?.[0]?.ChatRoom;
+            
+            if (!chatRoom) {
+                console.log('❌ Чат не найден для контракта');
+                return res.json({ 
+                    success: false, 
+                    message: 'Чат не найден' 
+                });
+            }
+
+            // Загружаем полную информацию о чате
+            const fullChatRoom = await ChatRoom.findByPk(chatRoom.id, {
                 include: [
                     {
                         model: ChatRoomParticipant,
@@ -121,7 +145,7 @@ class SignCallback {
                 ]
             });
 
-            if (chatRoom && this.webSocketServer) {
+            if (fullChatRoom && this.webSocketServer) {
                 // Отправляем уведомление в чат
                 const notificationData = {
                     type: 'contract_signed',
@@ -136,9 +160,9 @@ class SignCallback {
                 };
 
                 // Отправляем уведомление всем участникам чата
-                this.webSocketServer.broadcastToRoom(`room_${chatRoom.id}`, null, notificationData);
+                this.webSocketServer.broadcastToRoom(`room_${fullChatRoom.id}`, null, notificationData);
                 
-                console.log('📢 WebSocket уведомление отправлено в чат:', chatRoom.id);
+                console.log('📢 WebSocket уведомление отправлено в чат:', fullChatRoom.id);
 
                 // Отправляем специальное уведомление промоутеру для скрытия кнопки
                 const promoterNotification = {
@@ -150,7 +174,7 @@ class SignCallback {
                 };
 
                 // Находим промоутера в чате
-                const promoter = chatRoom.Participants?.find(p => 
+                const promoter = fullChatRoom.Participants?.find(p => 
                     p.User && p.User.user_type === 'promoter'
                 );
 

@@ -42,10 +42,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Обслуживание статических файлов React в продакшене
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../msma-new/build')));
+  app.use(express.static(path.join(__dirname, `${process.env.NODE_ENV === 'production' ? 'msma-client/build' : '../msma-new/build'}`)));
   
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../msma-new/build/index.html'));
+    res.sendFile(path.join(__dirname, `${process.env.NODE_ENV === 'production' ? 'msma-client/build/index.html' : '../msma-new/build/index.html'}`));
   });
 }
 

@@ -157,6 +157,19 @@ Fight.hasMany(FightOffer, { foreignKey: 'fight_id', as: 'Offers' });
 Promoters.hasMany(FightOffer, { foreignKey: 'promoter_id', as: 'SentOffers' });
 Fighters.hasMany(FightOffer, { foreignKey: 'fighter_id', as: 'ReceivedOffers' });
 
+// Связи для FightContract
+FightContract.belongsTo(Fight, { foreignKey: 'fight_id', as: 'Fight' });
+FightContract.belongsTo(Fighters, { foreignKey: 'fighter_id', as: 'Fighter' });
+FightContract.belongsTo(Promoters, { foreignKey: 'promoter_id', as: 'Promoter' });
+FightContract.belongsTo(FightOffer, { foreignKey: 'offer_id', as: 'Offer' });
+FightContract.belongsTo(ChatRoom, { foreignKey: 'fight_id', as: 'ChatRoom' });
+
+Fight.hasMany(FightContract, { foreignKey: 'fight_id', as: 'Contracts' });
+Fighters.hasMany(FightContract, { foreignKey: 'fighter_id', as: 'Contracts' });
+Promoters.hasMany(FightContract, { foreignKey: 'promoter_id', as: 'Contracts' });
+FightOffer.hasOne(FightContract, { foreignKey: 'offer_id', as: 'Contract' });
+ChatRoom.hasMany(FightContract, { foreignKey: 'fight_id', as: 'Contracts' });
+
 
 
 // // Users 1:1 RequisitesRF
