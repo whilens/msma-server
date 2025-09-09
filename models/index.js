@@ -189,8 +189,11 @@ Users.hasOne(PassportIn, { foreignKey: 'user_id' });
 PassportIn.belongsTo(Users, { foreignKey: 'user_id' });
 
 // Users 1:1 PromotersReqRF
-Users.hasOne(PromotersReqRF, { foreignKey: 'user_id' });
-PromotersReqRF.belongsTo(Users, { foreignKey: 'user_id' });
+Users.hasOne(PromotersReqRF, { foreignKey: 'user_id', as: 'PromotersReqRF' });
+PromotersReqRF.belongsTo(Users, { foreignKey: 'user_id', as: 'User' });
+
+Promoters.hasOne(PromotersReqRF, { foreignKey: 'promoter_id', as: 'PromotersReqRF' });
+PromotersReqRF.belongsTo(Promoters, { foreignKey: 'promoter_id', as: 'Promoter' });
 
 // Users 1:1 PromotersReqIn
 Users.hasOne(PromotersReqIn, { foreignKey: 'user_id' });

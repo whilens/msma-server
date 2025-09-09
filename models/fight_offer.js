@@ -67,7 +67,7 @@ const FightOffer = sequelize.define('FightOffer', {
         defaultValue: 'pending',
         comment: 'Статус оффера: pending - ожидание, accepted - принят, rejected - отклонен, expired - истек',
         validate: {
-            isIn: [['pending', 'accepted', 'rejected', 'expired']]
+            isIn: [['pending', 'accepted', 'rejected', 'expired', 'contract_signed']]
         }
     },
     response_at: {

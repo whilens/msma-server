@@ -1,4 +1,4 @@
-const { ChatMessage, ChatRoom, ChatRoomParticipant, Users, GoFight, Fight, Fighters, Events, Promoters, FightOffer, MartialArt, WeightCategory } = require('../models');
+const { ChatMessage, ChatRoom, ChatRoomParticipant, Users, GoFight, Fight, Fighters, Events, Promoters, PromotersReqRF, PassportRF, FightOffer, MartialArt, WeightCategory } = require('../models');
 const pdfService = require('../services/pdfService');   
 
 class ChatController {
@@ -1045,7 +1045,32 @@ class ChatController {
                 const contractData = {  
                     offer: offer,
                     goFight: goFight,
-                    fight: fight
+                    fight: await Fight.findByPk(offer.fight_id, {
+                        include: [{
+                            model: Events,
+                            as: 'Event'
+                        }]
+                    }),
+                    promoter: await Promoters.findByPk(offer.promoter_id, {
+                        include: [{
+                            model: Users,
+                            as: 'User',
+                            attributes: ['firstname', 'lastname', 'middlename', 'email', 'phone_number']
+                        },
+                        {
+                            model: PromotersReqRF,
+                            as: 'PromotersReqRF',
+                            attributes: ['inn', 'ogrn', 'legal_address', 'bic', 'bank_name', 'correspondent_account', 'settlement_account']
+                        }
+                    ]
+                    }),
+                    fighter: await Fighters.findByPk(offer.fighter_id, {
+                        include: [{
+                            model: Users,
+                            as: 'User',
+                            attributes: ['firstname', 'lastname', 'middlename', 'email', 'phone_number']
+                        }]
+                    })
                 }
 
                 // Логируем структуру данных для отладки

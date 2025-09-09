@@ -97,14 +97,24 @@ class SignController {
             const callbackUrl = `${process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL_PROD + '/api/sign/sign-callback' : ''}`;
             console.log('Отправляем контракт в OkiDoki API:', pdfUrl);
 
+
             const postContract = await axios.post('https://api.doki.online/external/new-pdf-contract', {
                 api_key: "YGCszoU1Yi_Ao9cK9pLZJCsmWRHWwJMC",
                 url: pdfUrl, // Добавлено .pdf
+
                 system_entities: [
                     {	
-                        "value": "",
-                        "keyword": ""
-                    }
+                        "value": "ФИО клиента",
+                        "keyword": room.GoFight.Fight.Event.Promoter.org_fio
+                    },
+                    {	
+                        "value": "E-Mail клиента",
+                        "keyword": room.GoFight.Fight.Event.Promoter.User.email
+                    },
+                    {	
+                        "value": "Телефон клиента",
+                        "keyword": room.GoFight.Fight.Event.Promoter.User.phone_number
+                    },
                 ],
                 callback_url: callbackUrl,  // на этот url наш сервис будет отправлять уведомления 
                 redirect_url: redirectUrl,

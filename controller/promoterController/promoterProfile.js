@@ -25,6 +25,10 @@ class PromoterProfile {
                             },
                         ]
                     },
+                    {
+                        model: PromotersReqRF,
+                        as: 'PromotersReqRF',
+                    }
                 ]
             });
 
@@ -47,26 +51,38 @@ class PromoterProfile {
         try {
             const user = req.user;
             const { promoterId } = req.params;
-            const { kpp, inn, ogrn, residential, dateofissue, nalogsystem, directname } = req.body;  
+            const { inn, ogrn, legal_address, bic, bank_name, correspondent_account, settlement_account } = req.body;  
+
+            // Получаем промоутера по user_id
+            const promoter = await Promoters.findOne({ where: { user_id: user.id } });
+            if (!promoter) {
+                return res.status(404).json({ message: "Промоутер не найден" });
+            }
 
             const reqData = {
-                kpp,
+                user_id: user.id,
+                promoter_id: promoter.id,
                 inn,
                 ogrn,
-                residential,
-                dateofissue,
-                nalogsystem,
-                directname
+                legal_address,
+                bic,
+                bank_name,
+                correspondent_account,
+                settlement_account
             }
 
-            const requisitesRF = await PromotersReqRF.findOrCreate({ where: { user_id: user.id } });
-            if (!requisitesRF) {
-                return res.status(404).json({ message: "PromotersReqRF не найден" });
+            const [requisitesRF, created] = await PromotersReqRF.findOrCreate({ 
+                where: { promoter_id: promoter.id },
+                defaults: reqData
+            });
+            
+            if (!created) {
+                await PromotersReqRF.update(reqData, { where: { promoter_id: promoter.id } });
             }
-            await PromotersReqRF.update(reqData, { where: { user_id: user.id } });
+            
             res.json({
                 success: true,
-                message: "PromotersReqRF успешно обновлен",
+                message: "Реквизиты РФ успешно обновлены",
                 requisitesRF: requisitesRF
             });
         }

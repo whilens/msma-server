@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
+const moment = require('moment');
+const { json } = require('body-parser');
 
 class PdfService {
     /**
@@ -282,6 +284,104 @@ class PdfService {
     }
 
     /**
+     * Генерирует число прописью на русском языке
+     * @param {number} num - Число для преобразования
+     * @returns {string} Число прописью
+     */
+    numberToWords(num) {
+        const ones = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+        const teens = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+        const tens = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+        const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+        
+        const thousands = ['', 'тысяча', 'тысячи', 'тысяч'];
+        const millions = ['', 'миллион', 'миллиона', 'миллионов'];
+        
+        if (num === 0) return 'ноль';
+        
+        let result = '';
+        
+        // Миллионы
+        if (num >= 1000000) {
+            const millionsPart = Math.floor(num / 1000000);
+            result += this.numberToWords(millionsPart) + ' ' + this.getWordForm(millionsPart, millions) + ' ';
+            num %= 1000000;
+        }
+        
+        // Тысячи
+        if (num >= 1000) {
+            const thousandsPart = Math.floor(num / 1000);
+            result += this.numberToWords(thousandsPart) + ' ' + this.getWordForm(thousandsPart, thousands) + ' ';
+            num %= 1000;
+        }
+        
+        // Сотни
+        if (num >= 100) {
+            result += hundreds[Math.floor(num / 100)] + ' ';
+            num %= 100;
+        }
+        
+        // Десятки и единицы
+        if (num >= 20) {
+            result += tens[Math.floor(num / 10)] + ' ';
+            num %= 10;
+        } else if (num >= 10) {
+            result += teens[num - 10] + ' ';
+            num = 0;
+        }
+        
+        if (num > 0) {
+            result += ones[num] + ' ';
+        }
+        
+        return result.trim();
+    }
+    
+    /**
+     * Возвращает правильную форму слова в зависимости от числа
+     * @param {number} num - Число
+     * @param {Array} forms - Формы слова [1, 2-4, 5+]
+     * @returns {string} Правильная форма слова
+     */
+    getWordForm(num, forms) {
+        const lastDigit = num % 10;
+        const lastTwoDigits = num % 100;
+        
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+            return forms[3]; // 5+
+        }
+        
+        if (lastDigit === 1) {
+            return forms[1]; // 1
+        }
+        
+        if (lastDigit >= 2 && lastDigit <= 4) {
+            return forms[2]; // 2-4
+        }
+        
+        return forms[3]; // 5+
+    }
+
+    /**
+     * Обрабатывает данные контракта и вычисляет автоматические поля
+     * @param {Object} contractData - Исходные данные контракта
+     * @returns {Object} Обработанные данные контракта
+     */
+    processContractData(contractData) {
+        const startDate = moment(contractData.fight.Event.start_date);
+        
+        return {
+            ...contractData,
+            fight: {
+                ...contractData.fight,
+                hours: contractData.fight.hours || '10:00',
+                predate: contractData.fight.predate || startDate.subtract(1, 'day').format('DD.MM.YYYY'),
+                start_date: startDate.format('DD.MM.YYYY')
+            }
+        };
+    }
+
+    /**
      * Создает PDF контракт (специализированный метод)
      * @param {Object} contractData - Данные контракта
      * @returns {Promise<Object>} - Результат создания PDF
@@ -290,21 +390,55 @@ class PdfService {
         try {
             const { contractTemplate } = require('../template/contract');
 
+            // Обрабатываем данные контракта
+            const processedData = this.processContractData(contractData);
+            
+            console.log('Обработанные данные контракта получены успешно');
            
 
-            const filterContractData = {    
-                fighterId: contractData.offer.fighter_id,
-                nationality: contractData.offer.Fighter.nationality,
-                birthdate: contractData.offer.Fighter.birthdate,
-                citizenship: contractData.offer.Fighter.User.citizenship,
-                email: contractData.offer.Fighter.User.email,
-                country: contractData.offer.Fighter.User.country,
-                phone_number: contractData.offer.Fighter.User.phone_number,
-                fullname: contractData.offer.Fighter.User.firstname + ' ' + contractData.offer.Fighter.User.lastname + ' ' + contractData.offer.Fighter.User.middlename,
+
+            const fighterData = {    
+                fighterId: processedData.offer.fighter_id,
+                fullname: (processedData.fighter?.User?.firstname || '') + ' ' + (processedData.fighter?.User?.lastname || '') + ' ' + (processedData.fighter?.User?.middlename || ''),
+            }
+
+            const promoterData = {
+                agencyName: processedData.promoter?.org_name || 'N/A',
+                agencyDirName: processedData.promoter?.org_fio || 'N/A',
+                agencyInn: processedData.promoter?.PromotersReqRF?.inn || 'N/A',
+                agencyOgrn: processedData.promoter?.PromotersReqRF?.ogrn || 'N/A',
+            }
+
+            const fee = processedData.offer?.Message?.offer_data?.fee || 0;
+            const financeData = {
+                summa: fee,
+                summaSpellout: this.numberToWords(fee) + ' рублей',
+                percentAgent: 15,
+            }
+
+            const fightData = {
+                fightName: processedData.offer?.Fight?.name || 'N/A',
+                eventDate: processedData.fight?.start_date || 'N/A',
+                maxWeight: processedData.offer?.weight_limit || 'N/A',
+                rounds: processedData.offer?.Fight?.rounds || 'N/A',
+                hours: processedData.fight?.hours || '10:00',
+                predate: processedData.fight?.predate || 'N/A',
+                team: processedData.offer?.team_size || 'N/A',
             }
 
 
-            const html = contractTemplate(filterContractData);
+            const financePromoterData = {
+                bik: processedData.promoter?.PromotersReqRF?.bic || 'N/A',
+                bank: processedData.promoter?.PromotersReqRF?.bank_name || 'N/A',
+                rs: processedData.promoter?.PromotersReqRF?.correspondent_account || 'N/A',
+                ks: processedData.promoter?.PromotersReqRF?.settlement_account || 'N/A',
+                address: processedData.promoter?.PromotersReqRF?.legal_address || 'N/A',
+                email: processedData.promoter?.User?.email || 'N/A',
+                director: processedData.promoter?.org_fio || 'N/A',
+            }
+
+
+            const html = contractTemplate(fighterData, promoterData, fightData, financePromoterData, financeData);
 
 
             const filename = `contract_${contractData.id || Date.now()}`;
