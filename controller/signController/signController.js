@@ -98,7 +98,7 @@ class SignController {
 
             const postContract = await axios.post('https://api.doki.online/external/new-pdf-contract', {
                 api_key: "YGCszoU1Yi_Ao9cK9pLZJCsmWRHWwJMC",
-                url: `${process.env.SERVER_URL || 'https://wayces.ru'}${pdfUrl}`, // Добавлено .pdf
+                url: "https://wayces.ru/uploads/contracts/contract_1757061894154_1757061894154.pdf", // Добавлено .pdf
                 system_entities: [
                     {	
                         "value": "",
@@ -106,7 +106,7 @@ class SignController {
                     }
                 ],
                 callback_url: `${process.env.SERVER_URL || 'https://wayces.ru'}/api/sign/sign-callback`,  // на этот url наш сервис будет отправлять уведомления 
-                redirect_url: `${process.env.CLIENT_URL || 'https://wayces.ru'}/chat/${roomId}`,
+                redirect_url: "http://localhost:3000/chat/" + roomId,
                 actual_user_card_id: "" // карточка подписанта. Если это поле не передать - договор подпишется от имени профиля
             });
 

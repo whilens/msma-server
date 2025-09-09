@@ -55,7 +55,7 @@ class PdfController {
             console.log('Найденный боец:', fighter);
 
             // Используем сервис для создания PDF
-            const result = await pdfService.createContractPdf(
+            const result = await pdfService.createFighterOfferPdf(
                 fighter,
                 promoterData,
                 fightDetails,

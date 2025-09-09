@@ -1,4 +1,4 @@
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
 
@@ -12,22 +12,21 @@ class PdfService {
      * @returns {Promise<Object>} - Результат создания PDF
      */
     async createPdf(html, filename, options = {}, subfolder = 'pdfs') {
+        let browser = null;
+        
         try {
             // Настройки по умолчанию для PDF
             const defaultOptions = {
                 format: 'A4',
-                border: {
-                    top: '0.5in',
-                    right: '0.5in',
-                    bottom: '0.5in',
-                    left: '0.5in'
+                margin: {
+                    top: '20mm',
+                    right: '20mm',
+                    bottom: '20mm',
+                    left: '20mm'
                 },
-                header: {
-                    height: '20mm',
-                },
-                footer: {
-                    height: '20mm',
-                }
+                printBackground: true,
+                displayHeaderFooter: false,
+                preferCSSPageSize: true
             };
 
             // Объединяем настройки
@@ -44,38 +43,58 @@ class PdfService {
                 fs.mkdirSync(pdfDir, { recursive: true });
             }
 
-            console.log('Создаем PDF файл:', filepath);
+            console.log('Создаем PDF файл с Puppeteer:', filepath);
+
+            // Запускаем браузер
+            browser = await puppeteer.launch({
+                headless: 'new',
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--no-first-run',
+                    '--no-zygote',
+                    '--disable-gpu'
+                ]
+            });
+
+            const page = await browser.newPage();
+
+            // Устанавливаем содержимое страницы
+            await page.setContent(html, {
+                waitUntil: 'networkidle0',
+                timeout: 30000
+            });
 
             // Генерируем PDF
-            return new Promise((resolve, reject) => {
-                pdf.create(html, pdfOptions).toFile(filepath, (err, result) => {
-                    if (err) {
-                        console.error('Ошибка создания PDF:', err);
-                        reject({
-                            success: false,
-                            message: 'Ошибка создания PDF файла',
-                            error: err.message
-                        });
-                    } else {
-                        console.log('PDF успешно создан:', result.filename);
-                        resolve({
-                            success: true,
-                            message: 'PDF файл успешно создан',
-                            filename: fullFilename,
-                            filePath: `/uploads/${subfolder}/${fullFilename}`,
-                            fullPath: result.filename,
-                        });
-                    }
-                });
+            await page.pdf({
+                path: filepath,
+                ...pdfOptions
             });
+
+            console.log('PDF успешно создан:', filepath);
+
+            return {
+                success: true,
+                message: 'PDF файл успешно создан',
+                filename: fullFilename,
+                filePath: `/uploads/${subfolder}/${fullFilename}`,
+                fullPath: filepath,
+            };
 
         } catch (error) {
             console.error('Ошибка в createPdf:', error);
             throw {
                 success: false,
-                message: 'Внутренняя ошибка сервера',
+                message: 'Ошибка создания PDF файла',
                 error: error.message
             };
+        } finally {
+            // Закрываем браузер
+            if (browser) {
+                await browser.close();
+            }
         }
     }
 
@@ -244,10 +263,9 @@ class PdfService {
 
             // Специальные настройки для оффера
             const options = {
-                header: {
-                    height: '20mm',
-                    contents: '<div style="text-align: center; font-size: 10px; color: #666;">Оффер бойцу - MSMA</div>'
-                }
+                displayHeaderFooter: true,
+                headerTemplate: '<div style="text-align: center; font-size: 10px; color: #666; width: 100%;">Оффер бойцу - MSMA</div>',
+                footerTemplate: '<div style="text-align: center; font-size: 8px; color: #999; width: 100%;">Страница <span class="pageNumber"></span> из <span class="totalPages"></span></div>'
             };
 
             const filename = `fighter_offer_${fighterData.id}`;
