@@ -416,9 +416,11 @@ class PdfService {
                 percentAgent: 15,
             }
 
+            const eventDate = moment(contractData.fight?.Event?.start_date).format('DD.MM.YYYY');
+
             const fightData = {
                 fightName: processedData.offer?.Fight?.name || 'N/A',
-                eventDate: processedData.fight?.start_date || 'N/A',
+                eventDate: eventDate || 'N/A',
                 maxWeight: processedData.offer?.weight_limit || 'N/A',
                 rounds: processedData.offer?.Fight?.rounds || 'N/A',
                 hours: processedData.fight?.hours || '10:00',
@@ -430,8 +432,8 @@ class PdfService {
             const financePromoterData = {
                 bik: processedData.promoter?.PromotersReqRF?.bic || 'N/A',
                 bank: processedData.promoter?.PromotersReqRF?.bank_name || 'N/A',
-                rs: processedData.promoter?.PromotersReqRF?.correspondent_account || 'N/A',
-                ks: processedData.promoter?.PromotersReqRF?.settlement_account || 'N/A',
+                rs: processedData.promoter?.PromotersReqRF?.settlement_account || 'N/A',
+                ks: processedData.promoter?.PromotersReqRF?.kpp || 'N/A',
                 address: processedData.promoter?.PromotersReqRF?.legal_address || 'N/A',
                 email: processedData.promoter?.User?.email || 'N/A',
                 director: processedData.promoter?.org_fio || 'N/A',

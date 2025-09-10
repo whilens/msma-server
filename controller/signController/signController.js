@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { ChatRoom, ChatRoomParticipant, Users, GoFight, Fight, Fighters, Events, Promoters, FightOffer, MartialArt, WeightCategory, FightContract } = require('../../models');
+const { ChatRoom, ChatRoomParticipant, Users, GoFight, Fight, Fighters, Events, Promoters, FightOffer, MartialArt, WeightCategory, FightContract, PromotersReqRF } = require('../../models');
 
 
 
@@ -28,7 +28,8 @@ class SignController {
                                                 model: Promoters,
                                                 as: 'Promoter',
                                                 include: [
-                                                    { model: Users, as: 'User' }
+                                                    { model: Users, as: 'User' },
+                                                    { model: PromotersReqRF, as: 'PromotersReqRF' }
                                                 ]
                                             }
                                         ]
@@ -101,20 +102,71 @@ class SignController {
             const postContract = await axios.post('https://api.doki.online/external/new-pdf-contract', {
                 api_key: "YGCszoU1Yi_Ao9cK9pLZJCsmWRHWwJMC",
                 url: pdfUrl, // Добавлено .pdf
+                // client_law_name,
+                // client_law_address,
+                // client_tax_id,
+                // client_ogrn,
+                // client_bank_name,
+                // client_bank_account,
+                // client_corr_account,
+                // client_bic,
+                // client_email,
+                // client_phone_number,
 
                 system_entities: [
                     {	
-                        "value": "ФИО клиента",
-                        "keyword": room.GoFight.Fight.Event.Promoter.org_fio
+                        "value": room.GoFight.Fight.Event.Promoter.org_fio,
+                        "keyword": "ФИО клиента"
                     },
                     {	
-                        "value": "E-Mail клиента",
-                        "keyword": room.GoFight.Fight.Event.Promoter.User.email
+                        "value": room.GoFight.Fight.Event.Promoter.User.email,
+                        "keyword": "E-Mail клиента"
                     },
                     {	
-                        "value": "Телефон клиента",
-                        "keyword": room.GoFight.Fight.Event.Promoter.User.phone_number
+                        "value": room.GoFight.Fight.Event.Promoter.User.phone_number,
+                        "keyword": "Телефон клиента"
                     },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.org_name,
+                        "keyword": "client_law_name"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.legal_address,
+                        "keyword": "client_law_address"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.inn,
+                        "keyword": "client_tax_id"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.ogrn,
+                        "keyword": "client_ogrn"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.bank_name,
+                        "keyword": "client_bank_name"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.settlement_account,
+                        "keyword": "client_bank_account"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.kpp,
+                        "keyword": "client_corr_account"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.PromotersReqRF.bic,
+                        "keyword": "client_bic"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.User.email,
+                        "keyword": "client_email"
+                    },
+                    {	
+                        "value": room.GoFight.Fight.Event.Promoter.User.phone_number,
+                        "keyword": "client_phone_number"
+                    },
+
                 ],
                 callback_url: callbackUrl,  // на этот url наш сервис будет отправлять уведомления 
                 redirect_url: redirectUrl,

@@ -51,7 +51,7 @@ class PromoterProfile {
         try {
             const user = req.user;
             const { promoterId } = req.params;
-            const { inn, ogrn, legal_address, bic, bank_name, correspondent_account, settlement_account } = req.body;  
+            const { inn, ogrn, legal_address, bic, bank_name, kpp, settlement_account } = req.body;  
 
             // Получаем промоутера по user_id
             const promoter = await Promoters.findOne({ where: { user_id: user.id } });
@@ -67,7 +67,7 @@ class PromoterProfile {
                 legal_address,
                 bic,
                 bank_name,
-                correspondent_account,
+                kpp,
                 settlement_account
             }
 

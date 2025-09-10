@@ -1060,7 +1060,7 @@ class ChatController {
                         {
                             model: PromotersReqRF,
                             as: 'PromotersReqRF',
-                            attributes: ['inn', 'ogrn', 'legal_address', 'bic', 'bank_name', 'correspondent_account', 'settlement_account']
+                            attributes: ['inn', 'ogrn', 'legal_address', 'bic', 'bank_name', 'kpp', 'settlement_account']
                         }
                     ]
                     }),
