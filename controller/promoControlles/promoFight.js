@@ -244,7 +244,7 @@ class PromoFights {
           "any.required": "Название арены обязательно для заполнения",
         }),
       date: Joi.date().iso().required().messages({
-        "date.iso": "Неверный формат даты", // Исправлено: date.iso
+        "date.iso": "Неверный формат даты", // Исправлено: date.iso 
         "any.required": "Дата обязательна для заполнения",
       }),
       eventDesc: Joi.string().optional(),

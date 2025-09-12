@@ -87,7 +87,7 @@ class PromoEvent {
                             {
                                 model: Users,
                                 as: 'User',
-                                attributes: ['id', 'firstname', 'lastname', 'nationality', 'avatar_url']
+                                attributes: ['id', 'firstname', 'lastname', 'country', 'city', 'avatar_url']
                             }
                         ]
                     },
@@ -100,7 +100,7 @@ class PromoEvent {
                             {
                                 model: Users,
                                 as: 'User',
-                                attributes: ['id', 'firstname', 'lastname', 'nationality', 'avatar_url']
+                                attributes: ['id', 'firstname', 'lastname', 'country', 'city', 'avatar_url']
                             }
                         ]
                     }
@@ -322,7 +322,7 @@ class PromoEvent {
                     {
                         model: Users,
                         as: 'User',
-                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'nationality']
+                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'country', 'city']
                     },
                     
 

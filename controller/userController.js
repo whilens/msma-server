@@ -76,9 +76,13 @@ class UserController {
                 'string.empty': 'Телефон обязателен',
                 'any.required': 'Телефон обязателен'
             }),
-            nationality: Joi.string().required().messages({
+            country: Joi.string().required().messages({
                 'string.empty': 'Гражданство обязательно',
                 'any.required': 'Гражданство обязательно'
+            }),
+            city: Joi.string().required().messages({
+                'string.empty': 'Город обязателен',
+                'any.required': 'Город обязателен'
             }),
             role: Joi.number().integer().valid(1, 2, 3).required().messages({
                 'number.base': 'Роль должна быть числом',
@@ -113,7 +117,8 @@ class UserController {
                 lastname: lastname,
                 middlename: middlename,
                 phone_number: req.body.phone, // Исправлено: phone -> phone_number
-                nationality: req.body.nationality,
+                country: req.body.country,
+                city: req.body.city,
             };
             if (middlename) {
                 updateData.middlename = middlename;
@@ -186,7 +191,8 @@ class UserController {
                     lastname: updatedUser.lastname,
                     middlename: updatedUser.middlename,
                     phone_number: updatedUser.phone_number,
-                    nationality: updatedUser.nationality,
+                    country: updatedUser.country,
+                    city: updatedUser.city,
                     role: role 
                 }
             });

@@ -49,7 +49,7 @@ class FighterFight {
                             {
                                 model: Users,
                                 as: 'User',
-                                attributes: ['id', 'firstname', 'lastname', 'nationality', 'avatar_url', 'country']
+                                attributes: ['id', 'firstname', 'lastname', 'country', 'city', 'avatar_url']
                             }
                         ]
                     },
@@ -62,7 +62,7 @@ class FighterFight {
                             {
                                 model: Users,
                                 as: 'User',
-                                attributes: ['id', 'firstname', 'lastname', 'nationality', 'avatar_url', 'country']
+                                attributes: ['id', 'firstname', 'lastname', 'city', 'avatar_url', 'country']
                             }
                         ]
                     }
@@ -675,7 +675,8 @@ class FighterFight {
                 fio,
                 phone,
                 email,
-                nationality,
+                country,
+                city,
                 martial_art_id,
                 weight_category_id,
                 boxrec,
@@ -706,7 +707,8 @@ class FighterFight {
                 middlename,
                 phone_number: phone,
                 email,
-                nationality
+                country,
+                city
             }, {
                 where: { id: user.id }
             });
@@ -832,7 +834,7 @@ class FighterFight {
                     {
                         model: Users,
                         as: 'User',
-                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'nationality', 'country'],
+                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'country', 'city'],
                         include: [
                             {
                                 model: RequisitesRF,

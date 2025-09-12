@@ -13,7 +13,7 @@ class PromoterProfile {
                     {
                         model: Users,
                         as: 'User',
-                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'nationality', 'country'],
+                        attributes: ['id', 'firstname', 'lastname', 'middlename', 'avatar_url', 'phone_number', 'email', 'city', 'country'],
                         include: [
                             {
                                 model: PromotersReqRF,

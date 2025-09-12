@@ -13,6 +13,7 @@ const signRouter = require('./signRouter')
 const promoMiddleware = require('../middleware/promoMiddleware')
 const fighterMiddleware = require('../middleware/fighterMiddleware')
 const authMiddleware = require('../middleware/authMiddleware')
+const fightsRouter = require('./fightsRouter')
 
 
 
@@ -26,5 +27,6 @@ router.use('/fight-response', fightResponseRouter)
 router.use('/upload', uploadRouter)
 router.use('/pdf', pdfRouter)
 router.use('/sign', signRouter)
+router.use('/fights', fightsRouter)
 
 module.exports = router

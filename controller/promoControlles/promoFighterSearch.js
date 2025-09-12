@@ -82,7 +82,7 @@ class PromoFighterSearch {
           {
             model: Users,
             as: 'User',
-            attributes: ['id', 'firstname', 'lastname', 'avatar_url', 'nationality']
+            attributes: ['id', 'firstname', 'lastname', 'avatar_url', 'country', 'city']
           },
           // {
           //   model: UserSports,
