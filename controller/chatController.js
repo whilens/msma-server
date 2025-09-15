@@ -381,7 +381,35 @@ class ChatController {
                                         attributes: ['id', 'name', 'salary'],
                                         include: [
                                             { model: MartialArt, as: 'MartialArt' },
-                                            { model: WeightCategory, as: 'WeightCategory' }
+                                            { model: WeightCategory, as: 'WeightCategory' },
+                                            {
+                                                model: Events,
+                                                as: 'Event',
+                                                include: [
+                                                    {
+                                                        model: Promoters,
+                                                        as: 'Promoter',
+                                                        include: [
+                                                            {
+                                                                model: Users,
+                                                                as: 'User',
+                                                                attributes: ['id', 'firstname', 'lastname', 'avatar_url']
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        model: Fighters,
+                                        as: 'Fighter',
+                                        include: [
+                                            {
+                                                model: Users,
+                                                as: 'User',
+                                                attributes: ['id', 'firstname', 'lastname', 'avatar_url']
+                                            }
                                         ]
                                     }
                                 ]
