@@ -1,5 +1,6 @@
 const { Fighters, Users, Events, Promoters, MartialArt, WeightCategory, Fight, UserSports, Antrop, RequisitesRF, RequisitesIn, PassportRF, PassportIn } = require('../../models');
 const { Op } = require('sequelize');
+const innService = require('../../services/innService');
 
 class FighterFight {
     // Получить все бои для бойца
@@ -895,6 +896,7 @@ class FighterFight {
             if (!requisitesRF) {
                 return res.status(404).json({ message: "RequisitesRF не найден" });
             }
+            const result = await innService.setInnType(inn, user.id);
             await RequisitesRF.update(reqData, { where: { user_id: user.id } });
             res.json({
                 success: true,

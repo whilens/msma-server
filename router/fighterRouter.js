@@ -2,6 +2,7 @@ const Router = require('express');
 const router = new Router();
 const fighterFight = require('../controller/fighterController/fighterFight');
 const authMiddleware = require('../middleware/authMiddleware');
+const fighterCareer = require('../controller/fighterController/fighterCareer');
 
 // Получить все бои (только для бойцов)
 router.get('/fights', authMiddleware, fighterFight.getAllFights);
@@ -44,5 +45,8 @@ router.put('/profile/passportin/:fighterId', authMiddleware, fighterFight.update
 
 // Получить профиль бойца
 router.get('/profile/:fighterId', authMiddleware, fighterFight.getFighterProfile);
+
+// Получить карьеру бойца
+router.get('/career/:userId', authMiddleware, fighterCareer.getFighterCareer);
 
 module.exports = router;

@@ -16,6 +16,7 @@ const Users = sequelize.define('Users', {
   avatar_url: DataTypes.STRING,
   is_verified: DataTypes.BOOLEAN,
   crypto_address: DataTypes.STRING,
+  type_inn: DataTypes.STRING,
   is_visible4dev: DataTypes.BOOLEAN,
   rating: DataTypes.INTEGER,
   last_seen_at: {
