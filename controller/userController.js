@@ -193,6 +193,7 @@ class UserController {
                     phone_number: updatedUser.phone_number,
                     country: updatedUser.country,
                     city: updatedUser.city,
+                    avatar_url: updatedUser.avatar_url,
                     role: role 
                 }
             });
@@ -269,7 +270,21 @@ class UserController {
                 maxAge: 30 * 24 * 60 * 60 * 1000
             });
             //  // Проверяем, что user.roles не undefined
-            return res.json({ accessToken, user: { id: user.id, email: user.email, phone: user.phone_number, role: userRoles } });
+            return res.json({ 
+                accessToken, 
+                user: { 
+                    id: user.id, 
+                    email: user.email, 
+                    phone: user.phone_number, 
+                    role: userRoles,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    middlename: user.middlename,
+                    avatar_url: user.avatar_url,
+                    country: user.country,
+                    city: user.city
+                } 
+            });
              // Добавляем роли в ответ
         } catch (err) {
             console.error('Ошибка входа:', err);
@@ -322,7 +337,18 @@ class UserController {
             } });
             if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
             const userRoles = user?.Roles[0]?.UserRoleAssign?.role_id ?? []
-            res.json({ id: user.id, email: user.email, phone: user.phone_number, role: userRoles });
+            res.json({ 
+                id: user.id, 
+                email: user.email, 
+                phone: user.phone_number, 
+                role: userRoles,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                middlename: user.middlename,
+                avatar_url: user.avatar_url,
+                country: user.country,
+                city: user.city
+            });
         } catch (err) {
             res.status(500).json({ message: 'Ошибка сервера' });
         }
